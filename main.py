@@ -5,6 +5,8 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+app.counter = 0
+
 @app.get("/")
 def root():
     return {"message": "Hello World during the coronavirus pandemic!"}
@@ -14,21 +16,17 @@ def root():
     return {"method": "GET"}
 
 class GiveMeSomethingRq(BaseModel):
-    first_key: str
+    name: str
+    surename: str
 
 
 class GiveMeSomethingResp(BaseModel):
-    received: dict
-    method: str = "POST"
+    id: int
+    patient: dict
 
 class GiveMeSomethingRespPut(BaseModel):
     received: dict
     method: str = "PUT"
-
-
-# @app.post("/method", response_model=GiveMeSomethingResp)
-# def receive_something(rq: GiveMeSomethingRq):
-#     return GiveMeSomethingResp(received=rq.dict())
 
 # @app.put("/method", response_model=GiveMeSomethingRespPut)
 # def put_something(rq: GiveMeSomethingRq):
@@ -45,3 +43,8 @@ def root():
 @app.put("/method")
 def root():
     return {"method": "PUT"}
+
+@app.post("/patient", response_model=GiveMeSomethingResp)
+def receive_something(rq: GiveMeSomethingRq):
+	app.counter += 1
+	return GiveMeSomethingResp(id = app.counter, patient=rq.dict())
